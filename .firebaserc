@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "default": "tracker-aa86b"
+  },
+  "targets": {
+    "tracker-aa86b": {
+      "hosting": {
+        "admin": [
+          "tracker-admin"
+        ],
+        "user": [
+          "tracker-user"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
