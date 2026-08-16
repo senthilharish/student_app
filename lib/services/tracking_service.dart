@@ -8,7 +8,13 @@ import '../data/firebase_service.dart';
 import 'notification_service.dart';
 
 class TrackingService extends ChangeNotifier {
-  static const double _proximityThresholdMeters = 500;
+  // Primary trigger: notify once the ETA (derived from live speed and
+  // distance) drops to this many minutes or under.
+  static const double _etaNotifyThresholdMinutes = 10;
+  // Fallback trigger: notify on raw distance if an ETA can't be computed
+  // yet (e.g. bus just started moving, so there's no speed sample) — this
+  // is a last-resort safety net, not the primary "10 minutes out" signal.
+  static const double _fallbackDistanceThresholdMeters = 300;
   // Below this speed the bus is treated as stationary/idle, so an ETA
   // extrapolated from it would be misleadingly large or infinite.
   static const double _minSpeedForEtaMs = 1.0;
@@ -138,10 +144,16 @@ class TrackingService extends ChangeNotifier {
   }
 
   void _checkProximityNotification(StudentModel student) {
-    if (_distanceToStop <= _proximityThresholdMeters && !_hasNotifiedProximity) {
+    final eta = _etaMinutes;
+    final withinEtaWindow = eta != null && eta <= _etaNotifyThresholdMinutes;
+    final withinFallbackDistance =
+        eta == null && _distanceToStop <= _fallbackDistanceThresholdMeters;
+    final shouldNotify = withinEtaWindow || withinFallbackDistance;
+
+    if (shouldNotify && !_hasNotifiedProximity) {
       _hasNotifiedProximity = true;
-      NotificationService().showProximityNotification();
-    } else if (_distanceToStop > _proximityThresholdMeters) {
+      NotificationService().showProximityNotification(etaMinutes: eta);
+    } else if (!shouldNotify) {
       _hasNotifiedProximity = false;
     }
   }

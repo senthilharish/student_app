@@ -44,10 +44,16 @@ class NotificationService {
     print('Notification tapped: ${notificationResponse.payload}');
   }
 
-  Future<void> showProximityNotification() async {
+  Future<void> showProximityNotification({double? etaMinutes}) async {
     if (await SettingsService.shouldSuppressNotifications()) {
       return;
     }
+
+    final body = etaMinutes == null
+        ? 'Bus is reaching your stop soon.'
+        : etaMinutes < 1
+            ? 'Bus is arriving now.'
+            : 'Bus arriving in about ${etaMinutes.round()} min.';
 
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
@@ -76,7 +82,7 @@ class NotificationService {
     await _flutterLocalNotificationsPlugin.show(
       0,
       'Bus Approaching!',
-      'Bus is reaching your stop soon.',
+      body,
       platformChannelSpecifics,
       payload: 'bus_proximity',
     );

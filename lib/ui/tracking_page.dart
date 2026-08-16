@@ -403,7 +403,10 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
                             circles: [
                               CircleMarker(
                                 point: stopLocation,
-                                radius: 500, // 500 meter notification radius
+                                // Matches TrackingService's fallback distance
+                                // trigger; the primary alert is ETA-based
+                                // (10 min out) and isn't a fixed radius.
+                                radius: 300,
                                 useRadiusInMeter: true,
                                 color: Colors.blue.withOpacity(0.1),
                                 borderColor: const Color(0xFF1565C0),

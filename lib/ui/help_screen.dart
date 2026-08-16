@@ -14,7 +14,7 @@ class HelpScreen extends StatelessWidget {
     ),
     (
       'When do I get notified?',
-      'You\'ll get a notification when the bus is within 500 meters of your stop, unless notifications are muted or you\'re in a quiet-hours window in Settings.',
+      'You\'ll get a notification when the bus is about 10 minutes from your stop, based on its live speed and distance. If speed can\'t be measured yet (e.g. the bus just started moving), you\'ll instead be notified once it\'s within 300 meters. Notifications are skipped if muted or during a quiet-hours window in Settings.',
     ),
     (
       'How do I change my bus stop?',
