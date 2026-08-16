@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:student_app/ui/app_background.dart';
 import 'package:student_app/ui/profile_screen.dart';
 import 'package:student_app/ui/settings_screen.dart';
 import 'package:student_app/ui/tracking_page.dart';
@@ -17,14 +18,16 @@ class HomeScreen extends StatelessWidget {
         final student = authService.currentStudent;
 
         if (student == null) {
-          return const Scaffold(
-            backgroundColor: Color(0xFFFAFAFA),
-            body: SafeArea(child: _HomeSkeleton()),
+          return Scaffold(
+            backgroundColor: Colors.transparent,
+            body: AppBackground(
+              child: const SafeArea(child: _HomeSkeleton()),
+            ),
           );
         }
 
         return Scaffold(
-          backgroundColor: Colors.grey[50],
+          backgroundColor: Colors.transparent,
           appBar: AppBar(
             elevation: 0,
             backgroundColor: const Color(0xFF1565C0),
@@ -53,7 +56,8 @@ class HomeScreen extends StatelessWidget {
               ),
             ],
           ),
-          body: SafeArea(
+          body: AppBackground(
+            child: SafeArea(
             child: student.busNumber.trim().isEmpty
                 ? _NoBusAssignedState(student: student)
                 : SingleChildScrollView(
@@ -408,6 +412,7 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
+          ),
           ),
         );
       },

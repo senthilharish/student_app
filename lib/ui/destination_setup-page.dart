@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
+import 'package:student_app/ui/app_background.dart';
 import '../../services/auth_service.dart';
 import '../../models/student_model.dart';
 import '../../data/firebase_service.dart';
@@ -98,18 +99,38 @@ class _DestinationSetupScreenState extends State<DestinationSetupScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Set Your Bus Stop'),
-        backgroundColor: Colors.blue,
+        backgroundColor: const Color(0xFF1565C0),
         foregroundColor: Colors.white,
       ),
-      body: Column(
+      backgroundColor: Colors.transparent,
+      body: AppBackground(
+        child: Column(
         children: [
           Container(
+            margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             padding: const EdgeInsets.all(16),
-            color: Colors.blue.shade50,
-            child: Text(
-              'Tap on the map to select your bus stop location',
-              style: Theme.of(context).textTheme.titleMedium,
-              textAlign: TextAlign.center,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.93),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.info_outline_rounded, color: Theme.of(context).colorScheme.primary),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Tap on the map to select your bus stop location',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                ),
+              ],
             ),
           ),
           Expanded(
@@ -147,7 +168,19 @@ class _DestinationSetupScreenState extends State<DestinationSetupScreen> {
             ),
           ),
           Container(
+            margin: const EdgeInsets.all(16),
             padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.93),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
             child: Column(
               children: [
                 Text(
@@ -164,9 +197,12 @@ class _DestinationSetupScreenState extends State<DestinationSetupScreen> {
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _saveStudentProfile,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                     ),
                     child: _isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
@@ -177,6 +213,7 @@ class _DestinationSetupScreenState extends State<DestinationSetupScreen> {
             ),
           ),
         ],
+        ),
       ),
     );
   }

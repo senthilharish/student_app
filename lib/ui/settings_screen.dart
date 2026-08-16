@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:student_app/ui/app_background.dart';
 import '../services/auth_service.dart';
 import '../services/settings_service.dart';
 import 'help_screen.dart';
@@ -17,7 +18,9 @@ class SettingsScreen extends StatelessWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: Consumer<SettingsService>(
+      backgroundColor: Colors.transparent,
+      body: AppBackground(
+        child: Consumer<SettingsService>(
         builder: (context, settings, child) {
           if (!settings.isLoaded) {
             return const Center(child: CircularProgressIndicator());
@@ -122,6 +125,7 @@ class SettingsScreen extends StatelessWidget {
             ],
           );
         },
+      ),
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
+import 'package:student_app/ui/app_background.dart';
 import '../../models/student_model.dart';
 import '../../services/auth_service.dart';
 
@@ -151,7 +152,7 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: const Color(0xFF1565C0),
@@ -165,7 +166,8 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: FadeTransition(
+      body: AppBackground(
+        child: FadeTransition(
         opacity: _fadeAnimation,
         child: Form(
           key: _formKey,
@@ -538,6 +540,7 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
               ],
             ),
           ),
+        ),
         ),
       ),
     );

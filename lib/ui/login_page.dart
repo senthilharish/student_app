@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:student_app/ui/app_background.dart';
 import 'package:student_app/ui/custom_button.dart';
 import 'package:student_app/ui/signup_page.dart';
 import '../../services/auth_service.dart';
@@ -55,47 +56,8 @@ class _LoginScreenState extends State<LoginScreen> {
     final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    scheme.primary.withOpacity(0.08),
-                    const Color(0xFFFAF8F2),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: -60,
-            right: -40,
-            child: Container(
-              width: 220,
-              height: 220,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: scheme.primary.withOpacity(0.12),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: -80,
-            left: -40,
-            child: Container(
-              width: 260,
-              height: 260,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Color(0x22F4A261),
-              ),
-            ),
-          ),
-          SafeArea(
+      body: AppBackground(
+        child: SafeArea(
             child: Center(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(20),
@@ -237,8 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-          ),
-        ],
+        ),
       ),
     );
   }

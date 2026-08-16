@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:student_app/ui/app_background.dart';
 
 class HelpScreen extends StatelessWidget {
   const HelpScreen({super.key});
@@ -32,7 +33,9 @@ class HelpScreen extends StatelessWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: ListView(
+      backgroundColor: Colors.transparent,
+      body: AppBackground(
+        child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           Text(
@@ -83,6 +86,7 @@ class HelpScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }
