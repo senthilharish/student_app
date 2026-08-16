@@ -1,4 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'settings_service.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -37,6 +38,10 @@ class NotificationService {
   }
 
   Future<void> showProximityNotification() async {
+    if (await SettingsService.shouldSuppressNotifications()) {
+      return;
+    }
+
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       'bus_proximity',

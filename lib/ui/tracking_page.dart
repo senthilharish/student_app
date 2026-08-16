@@ -225,16 +225,22 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: trackingService.isTracking 
-                          ? [Colors.green[400]!, Colors.green[600]!]
-                          : [Colors.red[400]!, Colors.red[600]!],
+                      colors: trackingService.hasError
+                          ? [Colors.orange[400]!, Colors.orange[700]!]
+                          : trackingService.isTracking
+                              ? [Colors.green[400]!, Colors.green[600]!]
+                              : [Colors.red[400]!, Colors.red[600]!],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: (trackingService.isTracking ? Colors.green[600]! : Colors.red[600]!)
+                        color: (trackingService.hasError
+                                ? Colors.orange[700]!
+                                : trackingService.isTracking
+                                    ? Colors.green[600]!
+                                    : Colors.red[600]!)
                             .withOpacity(0.3),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
@@ -254,12 +260,14 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
                             child: AnimatedSwitcher(
                               duration: const Duration(milliseconds: 300),
                               child: Icon(
-                                trackingService.isTracking 
-                                    ? Icons.track_changes_rounded 
-                                    : Icons.signal_cellular_off_rounded,
+                                trackingService.hasError
+                                    ? Icons.cloud_off_rounded
+                                    : trackingService.isTracking
+                                        ? Icons.track_changes_rounded
+                                        : Icons.signal_cellular_off_rounded,
                                 color: Colors.white,
                                 size: 24,
-                                key: ValueKey(trackingService.isTracking),
+                                key: ValueKey('${trackingService.isTracking}-${trackingService.hasError}'),
                               ),
                             ),
                           ),
@@ -269,7 +277,11 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  trackingService.isTracking ? 'Live Tracking' : 'Tracking Inactive',
+                                  trackingService.hasError
+                                      ? 'Connection Issue'
+                                      : trackingService.isTracking
+                                          ? 'Live Tracking'
+                                          : 'Tracking Inactive',
                                   style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -277,9 +289,11 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
                                   ),
                                 ),
                                 Text(
-                                  trackingService.isTracking 
-                                      ? 'Real-time bus location updates'
-                                      : 'Unable to connect to bus',
+                                  trackingService.hasError
+                                      ? (trackingService.errorMessage ?? 'Unable to load bus location.')
+                                      : trackingService.isTracking
+                                          ? 'Real-time bus location updates'
+                                          : 'Unable to connect to bus',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.white.withOpacity(0.9),
@@ -290,8 +304,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
                           ),
                         ],
                       ),
-                      
-                      if (trackingService.isTracking && busLocation != null) ...[
+
+                      if (trackingService.isTracking && !trackingService.hasError && busLocation != null) ...[
                         const SizedBox(height: 16),
                         Container(
                           padding: const EdgeInsets.all(16),
@@ -335,7 +349,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Last Updated',
+                                      'ETA',
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: Colors.white.withOpacity(0.8),
@@ -343,7 +357,11 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
                                       ),
                                     ),
                                     Text(
-                                      '${busLocation.timestamp.hour}:${busLocation.timestamp.minute.toString().padLeft(2, '0')}',
+                                      trackingService.etaMinutes == null
+                                          ? '--'
+                                          : trackingService.etaMinutes! < 1
+                                              ? 'Now'
+                                              : '${trackingService.etaMinutes!.round()} min',
                                       style: const TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
