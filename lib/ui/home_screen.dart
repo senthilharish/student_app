@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:student_app/ui/profile_screen.dart';
 import 'package:student_app/ui/settings_screen.dart';
 import 'package:student_app/ui/tracking_page.dart';
-import 'package:student_app/ui/trip_history_screen.dart';
 import '../../models/student_model.dart';
 import '../../services/auth_service.dart';
 import '../../services/tracking_service.dart';
@@ -35,17 +34,6 @@ class HomeScreen extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             actions: [
-              IconButton(
-                icon: const Icon(Icons.history_rounded),
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => TripHistoryScreen(studentUid: student.uid),
-                    ),
-                  );
-                },
-                tooltip: 'Trip History',
-              ),
               IconButton(
                 icon: const Icon(Icons.settings_outlined),
                 onPressed: () {

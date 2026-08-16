@@ -4,7 +4,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:student_app/models/bus_model.dart';
 import '../models/student_model.dart';
-import '../models/trip_history_model.dart';
 import '../data/firebase_service.dart';
 import 'notification_service.dart';
 
@@ -113,15 +112,6 @@ class TrackingService extends ChangeNotifier {
     if (_distanceToStop <= _proximityThresholdMeters && !_hasNotifiedProximity) {
       _hasNotifiedProximity = true;
       NotificationService().showProximityNotification();
-      FirebaseService.logTripArrival(
-        student.uid,
-        TripHistoryModel(
-          id: '',
-          busNumber: student.busNumber,
-          arrivedAt: DateTime.now(),
-          distanceAtArrival: _distanceToStop,
-        ),
-      );
     } else if (_distanceToStop > _proximityThresholdMeters) {
       _hasNotifiedProximity = false;
     }
