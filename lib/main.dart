@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:student_app/firebase_options.dart';
 import 'package:student_app/services/auth_service.dart';
+import 'package:student_app/services/notification_service.dart';
 import 'package:student_app/services/settings_service.dart';
 import 'package:student_app/services/tracking_service.dart';
 import 'package:student_app/ui/home_screen.dart';
@@ -15,6 +16,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await NotificationService().initialize();
   runApp(MyApp());
 }
 

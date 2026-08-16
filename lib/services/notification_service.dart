@@ -30,6 +30,13 @@ class NotificationService {
       initializationSettings,
       onDidReceiveNotificationResponse: _onNotificationTapped,
     );
+
+    // Android 13+ requires this at runtime; declaring it in the manifest
+    // alone doesn't grant it.
+    await _flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
   }
 
   void _onNotificationTapped(NotificationResponse notificationResponse) {
