@@ -33,6 +33,7 @@ class MyApp extends StatelessWidget {
         builder: (context, settings, child) {
           return MaterialApp(
             title: 'Bus Tracking Student',
+            debugShowCheckedModeBanner: false,
             themeMode: settings.themeMode,
             theme: ThemeData(
               useMaterial3: true,
