@@ -12,16 +12,23 @@ class TrackingService extends ChangeNotifier {
   // Below this speed the bus is treated as stationary/idle, so an ETA
   // extrapolated from it would be misleadingly large or infinite.
   static const double _minSpeedForEtaMs = 1.0;
+  // If no fresh location has arrived in this long, the bus is presumed to
+  // have gone offline (app killed, crashed, backgrounded) rather than
+  // genuinely stationary — the driver's throttle still writes at least
+  // every 20s while active, so this gives comfortable headroom.
+  static const Duration _staleAfter = Duration(seconds: 45);
 
   BusLocationModel? _currentBusLocation;
   BusLocationModel? _previousBusLocation;
   StreamSubscription<BusLocationModel?>? _busLocationSubscription;
+  Timer? _staleCheckTimer;
   bool _isTracking = false;
   double _distanceToStop = 0.0;
   double? _etaMinutes;
   bool _hasNotifiedProximity = false;
   bool _hasError = false;
   String? _errorMessage;
+  bool _isStale = false;
 
   BusLocationModel? get currentBusLocation => _currentBusLocation;
   bool get isTracking => _isTracking;
@@ -29,6 +36,7 @@ class TrackingService extends ChangeNotifier {
   double? get etaMinutes => _etaMinutes;
   bool get hasError => _hasError;
   String? get errorMessage => _errorMessage;
+  bool get isStale => _isStale;
 
   void startTracking(StudentModel student) {
     if (_isTracking) return;
@@ -39,6 +47,7 @@ class TrackingService extends ChangeNotifier {
     _errorMessage = null;
     _previousBusLocation = null;
     _etaMinutes = null;
+    _isStale = false;
 
     _busLocationSubscription = FirebaseService
         .getBusLocationStream(student.busNumber)
@@ -48,6 +57,7 @@ class TrackingService extends ChangeNotifier {
         _currentBusLocation = busLocation;
         _hasError = false;
         _errorMessage = null;
+        _isStale = !busLocation.isActive;
         _calculateDistance(student.stopLocation);
         _calculateEta();
         _checkProximityNotification(student);
@@ -58,12 +68,30 @@ class TrackingService extends ChangeNotifier {
       _errorMessage = 'Unable to load bus location. Check your connection.';
       notifyListeners();
     });
+
+    _staleCheckTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+      _checkStale();
+    });
+  }
+
+  void _checkStale() {
+    final current = _currentBusLocation;
+    if (current == null) return;
+
+    final isStaleNow = !current.isActive ||
+        DateTime.now().difference(current.timestamp) > _staleAfter;
+    if (isStaleNow != _isStale) {
+      _isStale = isStaleNow;
+      notifyListeners();
+    }
   }
 
   void stopTracking() {
     _isTracking = false;
     _busLocationSubscription?.cancel();
     _busLocationSubscription = null;
+    _staleCheckTimer?.cancel();
+    _staleCheckTimer = null;
     _currentBusLocation = null;
     _previousBusLocation = null;
     _distanceToStop = 0.0;
@@ -71,6 +99,7 @@ class TrackingService extends ChangeNotifier {
     _hasNotifiedProximity = false;
     _hasError = false;
     _errorMessage = null;
+    _isStale = false;
     notifyListeners();
   }
 

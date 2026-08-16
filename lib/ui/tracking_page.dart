@@ -214,6 +214,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
             }
           }
 
+          final status = _statusFor(trackingService);
+
           return Column(
             children: [
               // Status Bar
@@ -225,23 +227,14 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: trackingService.hasError
-                          ? [Colors.orange[400]!, Colors.orange[700]!]
-                          : trackingService.isTracking
-                              ? [Colors.green[400]!, Colors.green[600]!]
-                              : [Colors.red[400]!, Colors.red[600]!],
+                      colors: [status.colorLight, status.colorDark],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: (trackingService.hasError
-                                ? Colors.orange[700]!
-                                : trackingService.isTracking
-                                    ? Colors.green[600]!
-                                    : Colors.red[600]!)
-                            .withOpacity(0.3),
+                        color: status.colorDark.withOpacity(0.3),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),
@@ -260,14 +253,10 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
                             child: AnimatedSwitcher(
                               duration: const Duration(milliseconds: 300),
                               child: Icon(
-                                trackingService.hasError
-                                    ? Icons.cloud_off_rounded
-                                    : trackingService.isTracking
-                                        ? Icons.track_changes_rounded
-                                        : Icons.signal_cellular_off_rounded,
+                                status.icon,
                                 color: Colors.white,
                                 size: 24,
-                                key: ValueKey('${trackingService.isTracking}-${trackingService.hasError}'),
+                                key: ValueKey(status.title),
                               ),
                             ),
                           ),
@@ -277,11 +266,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  trackingService.hasError
-                                      ? 'Connection Issue'
-                                      : trackingService.isTracking
-                                          ? 'Live Tracking'
-                                          : 'Tracking Inactive',
+                                  status.title,
                                   style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -289,11 +274,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
                                   ),
                                 ),
                                 Text(
-                                  trackingService.hasError
-                                      ? (trackingService.errorMessage ?? 'Unable to load bus location.')
-                                      : trackingService.isTracking
-                                          ? 'Real-time bus location updates'
-                                          : 'Unable to connect to bus',
+                                  status.subtitle,
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.white.withOpacity(0.9),
@@ -305,7 +286,10 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
                         ],
                       ),
 
-                      if (trackingService.isTracking && !trackingService.hasError && busLocation != null) ...[
+                      if (trackingService.isTracking &&
+                          !trackingService.hasError &&
+                          !trackingService.isStale &&
+                          busLocation != null) ...[
                         const SizedBox(height: 16),
                         Container(
                           padding: const EdgeInsets.all(16),
@@ -461,4 +445,57 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
       ),
     );
   }
+
+  _TrackingStatus _statusFor(TrackingService trackingService) {
+    if (trackingService.hasError) {
+      return _TrackingStatus(
+        colorLight: Colors.orange[400]!,
+        colorDark: Colors.orange[700]!,
+        icon: Icons.cloud_off_rounded,
+        title: 'Connection Issue',
+        subtitle: trackingService.errorMessage ?? 'Unable to load bus location.',
+      );
+    }
+    if (trackingService.isTracking && trackingService.isStale) {
+      return _TrackingStatus(
+        colorLight: Colors.amber[400]!,
+        colorDark: Colors.amber[800]!,
+        icon: Icons.signal_wifi_bad_rounded,
+        title: 'Signal Lost',
+        subtitle: 'Bus hasn\'t reported its location recently.',
+      );
+    }
+    if (trackingService.isTracking) {
+      return _TrackingStatus(
+        colorLight: Colors.green[400]!,
+        colorDark: Colors.green[600]!,
+        icon: Icons.track_changes_rounded,
+        title: 'Live Tracking',
+        subtitle: 'Real-time bus location updates',
+      );
+    }
+    return _TrackingStatus(
+      colorLight: Colors.red[400]!,
+      colorDark: Colors.red[600]!,
+      icon: Icons.signal_cellular_off_rounded,
+      title: 'Tracking Inactive',
+      subtitle: 'Unable to connect to bus',
+    );
+  }
+}
+
+class _TrackingStatus {
+  final Color colorLight;
+  final Color colorDark;
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  _TrackingStatus({
+    required this.colorLight,
+    required this.colorDark,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
 }

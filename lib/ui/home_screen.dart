@@ -310,6 +310,29 @@ class HomeScreen extends StatelessWidget {
                         );
                       }
 
+                      if (trackingService.isStale) {
+                        return Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Colors.amber[50],
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: Colors.amber[300]!),
+                          ),
+                          child: Column(
+                            children: [
+                              Icon(Icons.signal_wifi_bad_rounded, color: Colors.amber[800], size: 28),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Signal lost — bus hasn\'t reported its location recently.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Colors.amber[900], fontWeight: FontWeight.w500),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
                       final eta = trackingService.etaMinutes;
                       return Container(
                         width: double.infinity,
